@@ -428,7 +428,7 @@ void inst_suma_registre(chip8_t* chip8){
 
 }   
 void inst_resta_registre(chip8_t * chip8){
-    //Si Vx < Vy -> Vf = 1;
+    //Si Vx < Vy -> Vf = 0; Al revès Vf = 1;
     //Vx = Vx - Vy
     if(chip8->v[chip8->actual.X] < chip8->v[chip8->actual.Y]) chip8->v[0xF] = 0;
     else chip8->v[0xF] = 1; 
@@ -441,16 +441,17 @@ void inst_dividir_entredos(chip8_t* chip8){
     chip8->v[chip8->actual.X] >>= 1;    
 }
 void inst_resta_inversa(chip8_t * chip8){
-    //Si Vy > Vy -> Vf = 1
+    //Si Vy < Vx -> Vf = 0; Al revès Vf = 1;
     //Vx = Vy - Vx
-    if(chip8->v[chip8->actual.X] < chip8->v[chip8->actual.Y]) chip8->v[0xf] = 1;
+    if(chip8->v[chip8->actual.X] <= chip8->v[chip8->actual.Y]) chip8->v[0xf] = 1;
+    else chip8->v[0xF] = 0;
     chip8->v[chip8->actual.X] = chip8->v[chip8->actual.Y] - chip8->v[chip8->actual.X];
 }
 
 void inst_multiplica_perdos(chip8_t * chip8){
-    // Si VX > 0x80, Vf = 1
+    // Vf = xifra més significativa Vx.
     // Vx  =  Vx * 2
-    if(chip8->v[chip8->actual.X] >= 0x80) chip8->v[0xF] = 1;
+    chip8->v[0xF] = (chip8->v[chip8->actual.X] & 0x80) >> 7;
     chip8->v[chip8->actual.X] <<= 1;
 }
 void inst_comparar_registres(chip8_t* chip8){
